@@ -29,7 +29,7 @@ secret keys, turn on the website, and run it once by hand to confirm it works.
 1. Go to <https://aistudio.google.com/app/apikey> and sign in with a Google account.
 2. Click **Create API key**, then copy the key.
 3. That is it. The free tier is generous and needs no billing. You will paste this key into GitHub
-   in step 4. Keep it private. Summaries are written by the `gemini-2.0-flash` model, set in
+   in step 4. Keep it private. Summaries are written by the `gemini-2.5-flash` model, set in
    `config.py` if you ever want to change it.
 
 ### 2. Set up Buttondown (email delivery + subscribers)

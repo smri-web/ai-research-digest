@@ -1,6 +1,6 @@
 # Google Gemini free-tier model (no credit card needed). Change this one line to use a
 # different Gemini model. See https://aistudio.google.com for a free API key.
-MODEL_ID = "gemini-2.0-flash"
+MODEL_ID = "gemini-2.5-flash"
 MAX_ITEMS = 10
 WINDOW_DAYS = 7
 PER_SOURCE_CAP = 3

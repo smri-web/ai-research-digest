@@ -22,7 +22,8 @@ The real editorial filter: **latest tech / AI, and nothing else.**
   compliance, and a signup form we embed on the site. The job POSTs the finished HTML email to
   Buttondown's API. (Gmail SMTP was considered and rejected: send caps, poor deliverability, and
   no legal unsubscribe handling.)
-- **Model:** **Google Gemini** `gemini-2.0-flash` via the free-tier REST API (no credit card).
+- **Model:** **Google Gemini** `gemini-2.5-flash` via the free-tier REST API (no credit card),
+  with thinking disabled (`thinkingBudget: 0`) so the JSON output is not truncated.
   Chosen to keep the whole newsletter at $0/month while preserving the automated cloud run.
   Called with `requests` (no SDK). Swappable to another Gemini model via one config line.
   (Originally scoped to Claude Haiku 4.5; changed to avoid any Anthropic prepaid credit.)

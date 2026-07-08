@@ -43,8 +43,11 @@ def summarize(item: Item, api_key: str | None = None) -> Summary | None:
                 "contents": [{"parts": [{"text": prompt}]}],
                 "generationConfig": {
                     "response_mime_type": "application/json",
-                    "maxOutputTokens": 900,
+                    "maxOutputTokens": 1200,
                     "temperature": 0.3,
+                    # gemini-2.5 models "think" by default and spend output tokens doing it,
+                    # which truncates our JSON. Summarizing needs no reasoning budget.
+                    "thinkingConfig": {"thinkingBudget": 0},
                 },
             },
             timeout=60,
