@@ -22,9 +22,11 @@ The real editorial filter: **latest tech / AI, and nothing else.**
   compliance, and a signup form we embed on the site. The job POSTs the finished HTML email to
   Buttondown's API. (Gmail SMTP was considered and rejected: send caps, poor deliverability, and
   no legal unsubscribe handling.)
-- **Model:** Claude **Haiku 4.5** (`claude-haiku-4-5-20251001`) — low cost, ample for plain
-  summaries. ~10 items/week costs well under $1/month. Swappable to Sonnet 5 via one config line.
-- **Dependencies (approved):** `requests`, `feedparser`, `anthropic`, `python-dotenv`.
+- **Model:** **Google Gemini** `gemini-2.0-flash` via the free-tier REST API (no credit card).
+  Chosen to keep the whole newsletter at $0/month while preserving the automated cloud run.
+  Called with `requests` (no SDK). Swappable to another Gemini model via one config line.
+  (Originally scoped to Claude Haiku 4.5; changed to avoid any Anthropic prepaid credit.)
+- **Dependencies (approved):** `requests`, `feedparser`, `python-dotenv`.
   Email/HTTP-to-Buttondown uses `requests`; HTML is built with plain Python (no template engine).
 
 ## Tracks and sources
@@ -94,7 +96,7 @@ instructions (see `config.py`).
 
 ## Secrets (GitHub repo → Settings → Secrets and variables → Actions)
 
-- `ANTHROPIC_API_KEY`
+- `GEMINI_API_KEY`
 - `BUTTONDOWN_API_KEY`
 
 No Gmail credentials and no recipient list in the repo — Buttondown holds subscribers. Locally,
@@ -137,7 +139,7 @@ manually via `workflow_dispatch` and a local dry-run flag.
 ## Setup walkthrough (delivered with the code, for a first-time GitHub Actions user)
 
 Front of the implementation plan, step by step:
-1. Get an Anthropic API key.
+1. Get a free Google Gemini API key (aistudio.google.com, no credit card).
 2. Get a Buttondown account + API key, create the signup form.
 3. Create the public GitHub repo and push this project.
 4. Add the two secrets.

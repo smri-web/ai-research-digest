@@ -1,7 +1,7 @@
 import json
 import logging
 import os
-from anthropic import Anthropic
+import requests
 from models import Item, Summary
 import config
 
@@ -15,9 +15,16 @@ _STYLE = ("Short direct sentences. No filler. No em-dashes. No emojis. "
           "Plain language for someone in tech who is not a researcher. "
           "Include numbers when the source gives them.")
 
+_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 
-def summarize(item: Item, client: Anthropic | None = None) -> Summary | None:
-    client = client or Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+
+def summarize(item: Item, api_key: str | None = None) -> Summary | None:
+    """Summarize one item with Google Gemini (free tier). Returns None on any failure so the
+    caller can skip this item and keep going."""
+    api_key = api_key or os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        log.error("GEMINI_API_KEY not set")
+        return None
     labels = _PAPER_LABELS if item.content_type == "paper" else _ARTICLE_LABELS
     prompt = (
         f"Summarize this {item.content_type} for a weekly AI newsletter.\n"
@@ -29,13 +36,21 @@ def summarize(item: Item, client: Anthropic | None = None) -> Summary | None:
         f"'breakdown' is 4 to 6 sentences of plain-language detail for readers who click to expand."
     )
     try:
-        msg = client.messages.create(
-            model=config.MODEL_ID,
-            max_tokens=900,
-            messages=[{"role": "user", "content": prompt}],
+        resp = requests.post(
+            _ENDPOINT.format(model=config.MODEL_ID),
+            params={"key": api_key},
+            json={
+                "contents": [{"parts": [{"text": prompt}]}],
+                "generationConfig": {
+                    "response_mime_type": "application/json",
+                    "maxOutputTokens": 900,
+                    "temperature": 0.3,
+                },
+            },
+            timeout=60,
         )
-        raw = msg.content[0].text.strip()
-        raw = raw[raw.find("{"): raw.rfind("}") + 1]     # tolerate stray prose
+        resp.raise_for_status()
+        raw = resp.json()["candidates"][0]["content"]["parts"][0]["text"]
         data = json.loads(raw)
         beats = {k: data["beats"][k] for k in labels}     # enforce label order
         return Summary(beats=beats, breakdown=data["breakdown"])

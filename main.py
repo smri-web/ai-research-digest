@@ -33,10 +33,10 @@ def collect():
     return items, uniq
 
 
-def build_groups(top, client):
+def build_groups(top):
     by_track: dict[str, list] = {k: [] for k in config.TRACKS}
     for item in top:
-        s = summarize.summarize(item, client)
+        s = summarize.summarize(item)
         if s is None:
             continue
         by_track[item.track].append((item, s))
@@ -66,9 +66,9 @@ def main(dry_run: bool = False, selftest: bool = False):
         log.info("Nothing new to publish this week.")
         return
 
-    from anthropic import Anthropic
-    client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
-    groups = build_groups(top, client)
+    if not os.environ.get("GEMINI_API_KEY"):
+        raise SystemExit("GEMINI_API_KEY is not set. Add it to your .env (local) or repo secrets (cloud).")
+    groups = build_groups(top)
     overview = overview_text(groups)
 
     os.makedirs("digests", exist_ok=True)

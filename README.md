@@ -2,7 +2,7 @@
 
 A weekly, plain-language newsletter about the latest in AI. Every Saturday morning (9:00 AM IST),
 a job running on GitHub's servers (no laptop needed) fetches recent papers and articles, keeps the
-10 most relevant, summarizes each with Claude, publishes a web page and an archive, and emails the
+10 most relevant, summarizes each with Google Gemini, publishes a web page and an archive, and emails the
 summaries to your subscribers through Buttondown.
 
 You do not need to understand the code to run this. Follow the setup steps once and it runs itself.
@@ -14,22 +14,23 @@ You do not need to understand the code to run this. Follow the setup steps once 
 The site is hosted free on **GitHub Pages** (the `docs/` folder). The schedule and automation are
 handled by **GitHub Actions** (a free robot that runs your script on a timer). The email list,
 signup form, and unsubscribe handling are managed by **Buttondown** (a newsletter service). Your
-two secret keys (Claude and Buttondown) are stored encrypted in GitHub and are never visible in the
+two secret keys (Gemini and Buttondown) are stored encrypted in GitHub and are never visible in the
 code or the logs.
 
 ---
 
 ## One-time setup
 
-You will do six things: get a Claude key, set up Buttondown, put this project on GitHub, add the
+You will do six things: get a Gemini key, set up Buttondown, put this project on GitHub, add the
 secret keys, turn on the website, and run it once by hand to confirm it works.
 
-### 1. Get your Anthropic (Claude) API key
+### 1. Get your Google Gemini API key (free, no credit card)
 
-1. Go to <https://console.anthropic.com> and sign in.
-2. Add a small amount of credit under **Billing** (a few dollars lasts a long time; see Costs below).
-3. Open **API keys**, click **Create key**, name it `ai-research-digest`, and copy the key
-   (it starts with `sk-ant-`). You will paste it into GitHub in step 4. Keep it private.
+1. Go to <https://aistudio.google.com/app/apikey> and sign in with a Google account.
+2. Click **Create API key**, then copy the key.
+3. That is it. The free tier is generous and needs no billing. You will paste this key into GitHub
+   in step 4. Keep it private. Summaries are written by the `gemini-2.0-flash` model, set in
+   `config.py` if you ever want to change it.
 
 ### 2. Set up Buttondown (email delivery + subscribers)
 
@@ -57,7 +58,7 @@ secret keys, turn on the website, and run it once by hand to confirm it works.
 In your repo on GitHub: **Settings → Secrets and variables → Actions**.
 
 - Under **Secrets**, click **New repository secret** twice and add:
-  - `ANTHROPIC_API_KEY` = your Claude key from step 1
+  - `GEMINI_API_KEY` = your Gemini key from step 1
   - `BUTTONDOWN_API_KEY` = your Buttondown key from step 2
 - Switch to the **Variables** tab, click **New repository variable**, and add:
   - `SITE_BASE_URL` = `https://YOUR_USERNAME.github.io/ai-research-digest`
@@ -92,9 +93,12 @@ a few minutes late under load; that is normal for a weekly newsletter. To change
 
 ## Costs
 
-- **Claude:** summarizing ~10 items per week costs well under **$1/month** with the Haiku model.
+- **Gemini:** free. Summarizing ~10 items per week sits well inside Google's free tier, so there
+  is no cost and no credit card required.
 - **GitHub Actions + Pages:** free for public repositories.
 - **Buttondown:** free up to ~100 subscribers.
+
+The whole newsletter runs at **$0/month**.
 
 ## Testing it on your own laptop (optional)
 
@@ -135,7 +139,7 @@ any papers as "seen", so you can re-run it as many times as you like.
 GMAIL_ADDRESS=smrikesavan@gmail.com
 GMAIL_APP_PASSWORD=the 16-character app password
 TEST_RECIPIENT=smrikesavan@gmail.com
-ANTHROPIC_API_KEY=sk-ant-...
+GEMINI_API_KEY=your free Gemini key
 ```
 
 **Send the preview:**
@@ -144,9 +148,9 @@ ANTHROPIC_API_KEY=sk-ant-...
 ./.venv/bin/python -m main --selftest
 ```
 
-A real digest email (subject prefixed with `[TEST]`) lands in your inbox. This does spend a few
-cents of Claude credit because it writes real summaries. When you are happy with it, do the live
-run from the Actions tab (step 6 above), which sends through Buttondown instead.
+A real digest email (subject prefixed with `[TEST]`) lands in your inbox. The summaries are written
+by Gemini's free tier, so this costs nothing. When you are happy with it, do the live run from the
+Actions tab (step 6 above), which sends through Buttondown instead.
 
 ## Changing what it covers
 
@@ -160,7 +164,7 @@ run from the Actions tab (step 6 above), which sends through Buttondown instead.
 ## Troubleshooting
 
 - **Run is red at "Generate and send digest":** usually a missing or wrong secret. Recheck
-  `ANTHROPIC_API_KEY` and `BUTTONDOWN_API_KEY` in Settings → Secrets.
+  `GEMINI_API_KEY` and `BUTTONDOWN_API_KEY` in Settings → Secrets.
 - **Email did not arrive:** confirm you have at least one subscriber in Buttondown and that the
   Buttondown key is correct. The site still publishes even if the email fails.
 - **Site shows 404:** Pages can take a couple of minutes after the first run. Confirm Pages is set
