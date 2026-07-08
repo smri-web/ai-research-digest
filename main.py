@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import time
 from datetime import datetime, UTC
 from dotenv import load_dotenv
 
@@ -14,12 +15,16 @@ log = logging.getLogger("digest")
 
 def collect():
     items, errors = [], []
+    s2_total = 0
     for track_key in config.TRACKS:
         a = arxiv.fetch(track_key)
         s = semantic_scholar.fetch(track_key)
+        s2_total += len(s)
         if not a:
             errors.append(f"arXiv ({config.TRACKS[track_key]['name']})")
         items += a + s
+    if s2_total == 0:
+        errors.append("Semantic Scholar")
     for feed in config.RSS_FEEDS:
         got = rss.fetch(feed)
         if not got:
@@ -35,7 +40,9 @@ def collect():
 
 def build_groups(top):
     by_track: dict[str, list] = {k: [] for k in config.TRACKS}
-    for item in top:
+    for i, item in enumerate(top):
+        if i:
+            time.sleep(config.SUMMARY_DELAY_SECONDS)   # stay under the free-tier rate limit
         s = summarize.summarize(item)
         if s is None:
             continue
@@ -51,13 +58,15 @@ def overview_text(groups) -> str:
             f"Each entry links to its source and expands to a fuller breakdown on the site.")
 
 
-def main(dry_run: bool = False, selftest: bool = False):
+def main(dry_run: bool = False, selftest: bool = False, to_stdout: bool = False):
     load_dotenv()
     now = datetime.now(UTC)
     dated = now.strftime("%Y-%m-%d")
 
     raw, source_errors = collect()
-    seen = state.load_seen(config.PROCESSED_IDS_PATH)
+    # --print is a stateless, on-demand view: ignore the "already sent" set so it always shows a
+    # full current digest, and it never saves state (see the early return below).
+    seen = set() if to_stdout else state.load_seen(config.PROCESSED_IDS_PATH)
     deduped = dedupe.dedupe(raw)
     filtered = filtering.filter_items(deduped, now, seen)
     top = ranking.rank(filtered, now)
@@ -70,6 +79,12 @@ def main(dry_run: bool = False, selftest: bool = False):
         raise SystemExit("GEMINI_API_KEY is not set. Add it to your .env (local) or repo secrets (cloud).")
     groups = build_groups(top)
     overview = overview_text(groups)
+
+    if to_stdout:
+        # Print the digest as markdown and stop. No files written, no email, no state saved, so
+        # this is safe to run any number of times and never interferes with the weekly newsletter.
+        print(render.render_markdown(dated, groups, overview, source_errors))
+        return
 
     os.makedirs("digests", exist_ok=True)
     os.makedirs("docs/digests", exist_ok=True)
@@ -111,4 +126,6 @@ if __name__ == "__main__":
     ap.add_argument("--dry-run", action="store_true", help="write files but do not send email")
     ap.add_argument("--selftest", action="store_true",
                     help="email one preview to yourself via Gmail; skips Buttondown and does not save processed_ids")
+    ap.add_argument("--print", dest="to_stdout", action="store_true",
+                    help="generate a fresh digest and print it as markdown to stdout; no files, email, or state changes")
     main(**vars(ap.parse_args()))

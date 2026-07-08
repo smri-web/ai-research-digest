@@ -5,6 +5,8 @@ MAX_ITEMS = 10
 WINDOW_DAYS = 7
 PER_SOURCE_CAP = 3
 PROCESSED_IDS_PATH = "processed_ids.json"
+# Seconds to wait between summary calls, to stay under Gemini's free-tier ~10 requests/minute.
+SUMMARY_DELAY_SECONDS = 7
 
 # Each track: display name, arXiv query, Semantic Scholar keywords, relevance keywords.
 TRACKS = {
