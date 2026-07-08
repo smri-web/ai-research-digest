@@ -1,0 +1,31 @@
+name: Weekly digest
+on:
+  schedule:
+    - cron: "30 3 * * 6"      # 03:30 UTC Saturday = 09:00 IST Saturday
+  workflow_dispatch:           # lets you run it by hand from the Actions tab
+
+permissions:
+  contents: write              # allows the job to commit generated files
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Generate and send digest
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          BUTTONDOWN_API_KEY: ${{ secrets.BUTTONDOWN_API_KEY }}
+          SITE_BASE_URL: ${{ vars.SITE_BASE_URL }}
+        run: python -m main
+      - name: Commit published files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs digests processed_ids.json
+          git diff --cached --quiet || git commit -m "Digest: $(date -u +%Y-%m-%d)"
+          git push
