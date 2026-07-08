@@ -1,3 +1,4 @@
+import re
 from datetime import datetime, timedelta
 from models import Item
 import config
@@ -6,11 +7,33 @@ import config
 _SKIP_MARKERS = ["benchmark", "dataset release", "we release a dataset", "we introduce a dataset",
                  "a new dataset", "purely theoretical"]
 
+# Short, ambiguous tokens that must match as WHOLE words. Otherwise "ai" matches "email" and
+# "maintain", "rag" matches "storage", etc., which is what let off-topic items slip through.
+_EXACT = {"ai", "ml", "rag", "gpt", "llm", "llms"}
+
+
+def _term_pattern(term: str) -> str:
+    # Exact terms get both boundaries; others get a leading boundary but an open end, so
+    # morphological variants still count ("eval" -> "evaluation", "prompt" -> "prompting").
+    if term in _EXACT:
+        return r"\b" + re.escape(term) + r"\b"
+    return r"\b" + re.escape(term)
+
+
+def _hits(hay: str, terms) -> bool:
+    return any(re.search(_term_pattern(t), hay) for t in terms)
+
 
 def _is_relevant(it: Item) -> bool:
     hay = (it.title + " " + it.text).lower()
     track_kw = config.TRACKS[it.track]["keywords"]
-    return any(k in hay for k in track_kw) or any(k in hay for k in config.AI_KEYWORDS)
+    if it.content_type == "paper":
+        # Papers come from targeted arXiv / Semantic Scholar queries, so a broad check is fine.
+        return _hits(hay, track_kw) or _hits(hay, config.AI_KEYWORDS)
+    # Articles and newsletters are noisier. Require a genuine AI signal or an AI-specific track
+    # keyword, so a pollution story in a science newsletter does not qualify just because it
+    # contains a word like "maintain".
+    return _hits(hay, config.STRONG_AI_KEYWORDS) or _hits(hay, track_kw)
 
 
 def _is_skippable(it: Item) -> bool:

@@ -13,6 +13,26 @@ def _item(**kw):
     return Item(**base)
 
 
+def test_articles_need_a_real_ai_signal():
+    # A genuine AI article stays; a science-newsletter roundup whose only "ai" is inside words
+    # like "maintain"/"available" is dropped (this is the class of leak we are fixing).
+    legit = _item(id="legit", content_type="article", track="systems",
+                  title="New LLM agent framework", text="a new approach to building AI agents")
+    roundup = _item(id="roundup", content_type="article", track="behavior",
+                    title="The Download: worms fight pollution",
+                    text="A dairy farmer uses worms to maintain cleaner water. Available now.")
+    out = filtering.filter_items([legit, roundup], NOW, set())
+    assert [i.id for i in out] == ["legit"]
+
+
+def test_word_boundary_not_substring():
+    # "storage pipeline for email" must NOT count as relevant via 'rag' inside 'storage' or
+    # 'ai' inside 'email'. With no real AI term, this article is dropped.
+    art = _item(id="sub", content_type="article", track="systems",
+                title="Cloud storage tips", text="managing storage and email retention")
+    assert filtering.filter_items([art], NOW, set()) == []
+
+
 def test_drops_old_seen_offtopic_and_benchmark():
     fresh = _item(id="fresh")
     old = _item(id="old", published=NOW - timedelta(days=10))

@@ -48,6 +48,15 @@ RSS_FEEDS = [
     {"source": "MIT Technology Review", "track": "behavior", "url": "https://www.technologyreview.com/feed/"},
     {"source": "Ars Technica", "track": "behavior", "url": "https://feeds.arstechnica.com/arstechnica/index"},
 ]
-# General-relevance keywords: an item must match at least one of these OR its track keywords.
+# Broad relevance keywords, used for PAPERS (which already come from targeted queries).
 AI_KEYWORDS = ["ai", "artificial intelligence", "machine learning", "neural", "model",
                "llm", "gpt", "transformer", "deep learning", "agent"]
+
+# Unambiguous AI signals. ARTICLES and newsletter items must hit one of these (or an AI-specific
+# track keyword) to count, so general tech/science roundups do not leak in.
+STRONG_AI_KEYWORDS = [
+    "artificial intelligence", "machine learning", "deep learning", "neural network",
+    "large language model", "language model", "foundation model", "generative ai",
+    "llm", "gpt", "transformer", "chatbot", "ai model", "ai system", "ai agent",
+    "ai tool", "ai assistant",
+]
