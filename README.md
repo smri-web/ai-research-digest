@@ -116,6 +116,38 @@ a few minutes late under load; that is normal for a weekly newsletter. To change
 4. Run the tests: `./.venv/bin/python -m pytest tests/ -v`
 5. Check the RSS sources are alive: `./.venv/bin/python scripts/verify_feeds.py`
 
+## Preview a test email to yourself (local only)
+
+Before going live, you can send one real digest to your own inbox to see how it looks. This uses
+Gmail (an app password), runs entirely on your laptop, and does **not** touch Buttondown or mark
+any papers as "seen", so you can re-run it as many times as you like.
+
+**Get a Gmail app password (one time):**
+
+1. Your Google account must have **2-Step Verification** turned on
+   (<https://myaccount.google.com/security>). App passwords require it.
+2. Go to <https://myaccount.google.com/apppasswords>.
+3. Type a name like `AI Digest test` and click **Create**. Copy the 16-character password it shows.
+
+**Then, in your `.env` file, set:**
+
+```
+GMAIL_ADDRESS=smrikesavan@gmail.com
+GMAIL_APP_PASSWORD=the 16-character app password
+TEST_RECIPIENT=smrikesavan@gmail.com
+ANTHROPIC_API_KEY=sk-ant-...
+```
+
+**Send the preview:**
+
+```bash
+./.venv/bin/python -m main --selftest
+```
+
+A real digest email (subject prefixed with `[TEST]`) lands in your inbox. This does spend a few
+cents of Claude credit because it writes real summaries. When you are happy with it, do the live
+run from the Actions tab (step 6 above), which sends through Buttondown instead.
+
 ## Changing what it covers
 
 - **Topics and sources** live in `config.py` (the four tracks, the arXiv queries, and the list of

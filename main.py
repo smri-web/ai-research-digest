@@ -5,6 +5,7 @@ from datetime import datetime, UTC
 from dotenv import load_dotenv
 
 import config, state, dedupe, filtering, ranking, render, delivery, summarize
+from selftest import send_via_gmail
 from sources import arxiv, semantic_scholar, rss
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -50,7 +51,7 @@ def overview_text(groups) -> str:
             f"Each entry links to its source and expands to a fuller breakdown on the site.")
 
 
-def main(dry_run: bool = False):
+def main(dry_run: bool = False, selftest: bool = False):
     load_dotenv()
     now = datetime.now(UTC)
     dated = now.strftime("%Y-%m-%d")
@@ -86,6 +87,13 @@ def main(dry_run: bool = False):
     site_base = os.environ.get("SITE_BASE_URL", "")
     email_html = render.render_email_html(dated, groups, site_base)
 
+    if selftest:
+        to = os.environ.get("TEST_RECIPIENT") or os.environ.get("GMAIL_ADDRESS", "")
+        ok = send_via_gmail(f"[TEST] AI Research Digest: {dated}", email_html, to)
+        log.info("Self-test email to %s: %s", to, "sent" if ok else "FAILED (check .env)")
+        log.info("Self-test: files written; processed_ids NOT saved, safe to re-run.")
+        return
+
     if dry_run:
         log.info("Dry run: skipping email send. Files written.")
     else:
@@ -101,4 +109,6 @@ def main(dry_run: bool = False):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true", help="write files but do not send email")
+    ap.add_argument("--selftest", action="store_true",
+                    help="email one preview to yourself via Gmail; skips Buttondown and does not save processed_ids")
     main(**vars(ap.parse_args()))
