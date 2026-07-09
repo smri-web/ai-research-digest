@@ -97,6 +97,8 @@ def main(to_stdout: bool = False):
     dates = [n[:-5] for n in os.listdir("docs/digests") if n.endswith(".html")]
     with open("docs/archive.html", "w") as f:
         f.write(render.render_archive_html(dates))
+    with open("docs/feed.xml", "w") as f:
+        f.write(render.render_feed_xml(dates))
 
     published_ids = {item.id for _, pairs in groups for item, _ in pairs}
     state.save_seen(config.PROCESSED_IDS_PATH, seen | published_ids)

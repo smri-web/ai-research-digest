@@ -1,4 +1,10 @@
 import html as _html
+from datetime import datetime, timezone
+
+SITE_BASE = "https://smri-web.github.io/ai-research-digest"
+SITE_NAME = "AI Research Digest"
+SITE_DESC = ("A weekly, plain-language digest of the latest AI research: models, system design, "
+             "psychology, and human behavior. New issue every Friday evening.")
 
 _PAGE_CSS = """
 body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;max-width:720px;
@@ -29,6 +35,31 @@ def _source_note(source_errors) -> str:
     return f'<p class="note">Some sources were unavailable this week: {_esc(names)}.</p>'
 
 
+def _page(title: str, description: str, path: str, body: str) -> str:
+    """Wrap body in a full HTML document with the meta tags that make shared links unfurl as a
+    rich card on LinkedIn, WhatsApp, Slack, and X."""
+    url = f"{SITE_BASE}/{path}" if path else SITE_BASE + "/"
+    t, d = _esc(title), _esc(description)
+    return (
+        "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n"
+        "<meta charset=\"utf-8\">\n"
+        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
+        f"<title>{t}</title>\n"
+        f"<meta name=\"description\" content=\"{d}\">\n"
+        f"<meta property=\"og:title\" content=\"{t}\">\n"
+        f"<meta property=\"og:description\" content=\"{d}\">\n"
+        f"<meta property=\"og:type\" content=\"website\">\n"
+        f"<meta property=\"og:url\" content=\"{url}\">\n"
+        f"<meta property=\"og:site_name\" content=\"{_esc(SITE_NAME)}\">\n"
+        f"<meta property=\"og:image\" content=\"{SITE_BASE}/og.png\">\n"
+        "<meta name=\"twitter:card\" content=\"summary_large_image\">\n"
+        f"<link rel=\"alternate\" type=\"application/rss+xml\" title=\"{_esc(SITE_NAME)}\" "
+        f"href=\"{SITE_BASE}/feed.xml\">\n"
+        f"<style>{_PAGE_CSS}</style>\n"
+        "</head>\n<body>\n" + body + "\n</body>\n</html>\n"
+    )
+
+
 def render_digest_html(dated, groups, overview, source_errors) -> str:
     parts = [f"<!-- generated --><h1>AI Research Digest</h1><p class='meta'>{_esc(dated)}</p>",
              _source_note(source_errors)]
@@ -45,7 +76,10 @@ def render_digest_html(dated, groups, overview, source_errors) -> str:
             parts.append("</div>")
         parts.append("</div>")
     parts.append(f'<div class="track"><h2>This week in short</h2><p>{_esc(overview)}</p></div>')
-    return f"<style>{_PAGE_CSS}</style>" + "".join(parts)
+    n = sum(len(p) for _, p in groups)
+    return _page(f"{SITE_NAME}: {dated}",
+                 f"{n} plain-language summaries of this week's AI research. {overview[:150]}",
+                 f"digests/{dated}.html", "".join(parts))
 
 
 def render_markdown(dated, groups, overview, source_errors, frontmatter: bool = True) -> str:
@@ -76,10 +110,12 @@ def render_markdown(dated, groups, overview, source_errors, frontmatter: bool = 
 
 
 def render_index_html(dated) -> str:
-    return (f"<style>{_PAGE_CSS}</style><h1>AI Research Digest</h1>"
-            f'<p>A weekly, plain-language digest of the latest in AI. '
-            f'<a href="archive.html">Browse the archive</a>.</p>'
-            f'<p><a href="digests/{_esc(dated)}.html">Read this week\'s digest ({_esc(dated)})</a></p>')
+    body = (f"<h1>{_esc(SITE_NAME)}</h1>"
+            f'<p>{_esc(SITE_DESC)}</p>'
+            f'<p><a href="digests/{_esc(dated)}.html">Read this week\'s digest ({_esc(dated)})</a>'
+            f' &middot; <a href="archive.html">Archive</a>'
+            f' &middot; <a href="feed.xml">RSS</a></p>')
+    return _page(SITE_NAME, SITE_DESC, "", body)
 
 
 def render_archive_html(dates) -> str:
@@ -87,5 +123,32 @@ def render_archive_html(dates) -> str:
         f'<li><a href="digests/{_esc(d)}.html">{_esc(d)}</a></li>'
         for d in sorted(dates, reverse=True)
     )
-    return (f"<style>{_PAGE_CSS}</style><h1>Archive</h1>"
-            f'<p><a href="index.html">Back to latest</a></p><ul>{items}</ul>')
+    body = (f"<h1>Archive</h1>"
+            f'<p><a href="index.html">Back to latest</a> &middot; '
+            f'<a href="feed.xml">Subscribe via RSS</a></p><ul>{items}</ul>')
+    return _page(f"Archive · {SITE_NAME}", SITE_DESC, "archive.html", body)
+
+
+def render_feed_xml(dates) -> str:
+    """RSS feed with one entry per issue, newest first, so anyone can follow the digest in a
+    feed reader. Entries link to the published page rather than embedding full content."""
+    entries = []
+    for d in sorted(dates, reverse=True):
+        url = f"{SITE_BASE}/digests/{d}.html"
+        # RSS requires RFC 822 dates ("Fri, 10 Jul 2026 13:00:00 GMT").
+        pub = datetime.strptime(d, "%Y-%m-%d").replace(hour=13, tzinfo=timezone.utc)
+        entries.append(
+            f"<item><title>{_esc(SITE_NAME)}: {_esc(d)}</title>"
+            f"<link>{url}</link><guid isPermaLink=\"true\">{url}</guid>"
+            f"<pubDate>{pub.strftime('%a, %d %b %Y %H:%M:%S GMT')}</pubDate>"
+            f"<description>Plain-language summaries of this week's AI research.</description>"
+            f"</item>"
+        )
+    return (
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+        "<rss version=\"2.0\"><channel>"
+        f"<title>{_esc(SITE_NAME)}</title>"
+        f"<link>{SITE_BASE}/</link>"
+        f"<description>{_esc(SITE_DESC)}</description>"
+        + "".join(entries) + "</channel></rss>"
+    )

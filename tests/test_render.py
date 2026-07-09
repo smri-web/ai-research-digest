@@ -36,3 +36,20 @@ def test_markdown_has_obsidian_frontmatter():
 def test_archive_lists_dates_newest_first():
     html = render.render_archive_html(["2026-06-28", "2026-07-05"])
     assert html.index("2026-07-05") < html.index("2026-06-28")
+
+
+def test_pages_carry_share_metadata():
+    groups = [("AI models & research", [_pair()])]
+    html = render.render_digest_html("2026-07-08", groups, "Overview.", [])
+    assert html.startswith("<!DOCTYPE html>")
+    assert '<meta property="og:title"' in html
+    assert 'og:url" content="https://smri-web.github.io/ai-research-digest/digests/2026-07-08.html"' in html
+    assert 'rel="alternate" type="application/rss+xml"' in html
+
+
+def test_feed_is_valid_rss_newest_first():
+    xml = render.render_feed_xml(["2026-06-28", "2026-07-05"])
+    assert xml.startswith('<?xml version="1.0"')
+    assert "<rss version=\"2.0\">" in xml
+    assert xml.index("2026-07-05") < xml.index("2026-06-28")
+    assert "Sun, 28 Jun 2026 13:00:00 GMT" in xml     # RFC 822 pubDate
