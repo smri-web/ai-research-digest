@@ -18,10 +18,14 @@ The real editorial filter: **latest tech / AI, and nothing else.**
   its own git repo, published to a **public** GitHub repo.
 - **Hosting:** GitHub Pages served from the `/docs` folder on `main`. The weekly job writes
   HTML into `/docs` and commits it, so the archive is real, browsable files that Git versions.
-- **Delivery:** **Buttondown** (newsletter service). It owns the subscriber list, unsubscribes,
-  compliance, and a signup form we embed on the site. The job POSTs the finished HTML email to
-  Buttondown's API. (Gmail SMTP was considered and rejected: send caps, poor deliverability, and
-  no legal unsubscribe handling.)
+- **Delivery (changed 2026-07-09): Obsidian, not email.** The weekly markdown digest (now with
+  YAML frontmatter: date + `ai-digest` tag) is pulled from the repo into the owner's iCloud
+  Obsidian vault ("AI Knowledge/AI Research Digest") by a launchd agent
+  (`com.smri.aidigest-obsidian`, Saturdays 10:00 IST + at login) running
+  `scripts/sync_to_obsidian.py` from `~/Library/Application Support/aidigest/` (background jobs
+  cannot read `~/Documents` under macOS TCC). Email/Buttondown/Gmail code was removed entirely;
+  the website + archive remain. (Buttondown had been chosen over Gmail SMTP earlier; both are
+  superseded by this.)
 - **Model:** **Google Gemini** `gemini-2.5-flash` via the free-tier REST API (no credit card),
   with thinking disabled (`thinkingBudget: 0`) so the JSON output is not truncated.
   Chosen to keep the whole newsletter at $0/month while preserving the automated cloud run.

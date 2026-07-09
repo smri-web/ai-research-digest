@@ -19,8 +19,6 @@ jobs:
       - name: Generate and send digest
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          BUTTONDOWN_API_KEY: ${{ secrets.BUTTONDOWN_API_KEY }}
-          SITE_BASE_URL: ${{ vars.SITE_BASE_URL }}
         run: python -m main
       - name: Commit published files
         run: |

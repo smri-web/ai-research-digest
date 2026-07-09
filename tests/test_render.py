@@ -23,11 +23,14 @@ def test_html_has_anchor_details_and_no_emdash():
     assert "—" not in html                     # no em-dash anywhere we generate
 
 
-def test_email_links_to_page_section():
+def test_markdown_has_obsidian_frontmatter():
     groups = [("AI models & research", [_pair()])]
-    email = render.render_email_html("2026-07-08", groups, "https://ex.github.io/ai-research-digest")
-    assert "https://ex.github.io/ai-research-digest/digests/2026-07-08.html#item-attention-is-all-you-need" in email
-    assert "read the full breakdown" in email.lower()
+    md = render.render_markdown("2026-07-08", groups, "Overview.", [])
+    assert md.startswith("---\ndate: 2026-07-08\n")     # Obsidian properties block
+    assert "- ai-digest" in md
+    # --print mode asks for no frontmatter
+    bare = render.render_markdown("2026-07-08", groups, "Overview.", [], frontmatter=False)
+    assert bare.startswith("# AI Research Digest")
 
 
 def test_archive_lists_dates_newest_first():

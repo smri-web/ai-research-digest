@@ -5,8 +5,7 @@ import time
 from datetime import datetime, UTC
 from dotenv import load_dotenv
 
-import config, state, dedupe, filtering, ranking, render, delivery, summarize
-from selftest import send_via_gmail
+import config, state, dedupe, filtering, ranking, render, summarize
 from sources import arxiv, semantic_scholar, rss
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -58,7 +57,7 @@ def overview_text(groups) -> str:
             f"Each entry links to its source and expands to a fuller breakdown on the site.")
 
 
-def main(dry_run: bool = False, selftest: bool = False, to_stdout: bool = False):
+def main(to_stdout: bool = False):
     load_dotenv()
     now = datetime.now(UTC)
     dated = now.strftime("%Y-%m-%d")
@@ -81,9 +80,9 @@ def main(dry_run: bool = False, selftest: bool = False, to_stdout: bool = False)
     overview = overview_text(groups)
 
     if to_stdout:
-        # Print the digest as markdown and stop. No files written, no email, no state saved, so
-        # this is safe to run any number of times and never interferes with the weekly newsletter.
-        print(render.render_markdown(dated, groups, overview, source_errors))
+        # Print the digest as markdown and stop. No files written, no state saved, so this is
+        # safe to run any number of times and never interferes with the weekly publish.
+        print(render.render_markdown(dated, groups, overview, source_errors, frontmatter=False))
         return
 
     os.makedirs("digests", exist_ok=True)
@@ -99,26 +98,6 @@ def main(dry_run: bool = False, selftest: bool = False, to_stdout: bool = False)
     with open("docs/archive.html", "w") as f:
         f.write(render.render_archive_html(dates))
 
-    site_base = os.environ.get("SITE_BASE_URL", "")
-    email_html = render.render_email_html(dated, groups, site_base)
-
-    if selftest:
-        to = os.environ.get("TEST_RECIPIENT") or os.environ.get("GMAIL_ADDRESS", "")
-        ok = send_via_gmail(f"[TEST] AI Research Digest: {dated}", email_html, to)
-        log.info("Self-test email to %s: %s", to, "sent" if ok else "FAILED (check .env)")
-        log.info("Self-test: files written; processed_ids NOT saved, safe to re-run.")
-        return
-
-    if dry_run:
-        log.info("Dry run: skipping email send. Files written.")
-    elif not os.environ.get("BUTTONDOWN_API_KEY"):
-        # No Buttondown yet: publish the site and archive anyway, just skip the email.
-        log.warning("BUTTONDOWN_API_KEY not set; skipping email send. Site files still written.")
-    else:
-        ok = delivery.send(f"AI Research Digest: {dated}", email_html)
-        if not ok:
-            raise SystemExit("Email delivery failed; site files were still written.")
-
     published_ids = {item.id for _, pairs in groups for item, _ in pairs}
     state.save_seen(config.PROCESSED_IDS_PATH, seen | published_ids)
     log.info("Done. Published %d items.", len(published_ids))
@@ -126,9 +105,6 @@ def main(dry_run: bool = False, selftest: bool = False, to_stdout: bool = False)
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--dry-run", action="store_true", help="write files but do not send email")
-    ap.add_argument("--selftest", action="store_true",
-                    help="email one preview to yourself via Gmail; skips Buttondown and does not save processed_ids")
     ap.add_argument("--print", dest="to_stdout", action="store_true",
-                    help="generate a fresh digest and print it as markdown to stdout; no files, email, or state changes")
+                    help="generate a fresh digest and print it as markdown to stdout; no files or state changes")
     main(**vars(ap.parse_args()))

@@ -48,22 +48,13 @@ def render_digest_html(dated, groups, overview, source_errors) -> str:
     return f"<style>{_PAGE_CSS}</style>" + "".join(parts)
 
 
-def render_email_html(dated, groups, site_base) -> str:
-    page = f"{site_base.rstrip('/')}/digests/{dated}.html"
-    parts = [f"<h1>AI Research Digest</h1><p>{_esc(dated)}</p>"]
-    for track_name, pairs in groups:
-        parts.append(f"<h2>{_esc(track_name)}</h2>")
-        for item, summary in pairs:
-            parts.append(f'<h3>{_esc(item.title)}</h3>')
-            parts.append(f'<p style="color:#666">{_esc(_authors(item))} &middot; {_esc(item.source)}</p>')
-            for label, text in summary.beats.items():
-                parts.append(f"<p><strong>{_esc(label)}:</strong> {_esc(text)}</p>")
-            parts.append(f'<p><a href="{page}#{item.slug()}">Read the full breakdown</a></p>')
-    return "".join(parts)
-
-
-def render_markdown(dated, groups, overview, source_errors) -> str:
-    lines = [f"# AI Research Digest: {dated}", ""]
+def render_markdown(dated, groups, overview, source_errors, frontmatter: bool = True) -> str:
+    lines = []
+    if frontmatter:
+        # YAML properties block that Obsidian reads natively: shows the date as a property and
+        # makes every digest findable via the #ai-digest tag or a tag search.
+        lines += ["---", f"date: {dated}", "tags:", "  - ai-digest", "---", ""]
+    lines += [f"# AI Research Digest: {dated}", ""]
     if source_errors:
         lines.append(f"> Some sources were unavailable this week: {', '.join(source_errors)}.")
         lines.append("")
@@ -85,11 +76,9 @@ def render_markdown(dated, groups, overview, source_errors) -> str:
 
 
 def render_index_html(dated) -> str:
-    # Latest digest, plus the Buttondown signup form placeholder.
     return (f"<style>{_PAGE_CSS}</style><h1>AI Research Digest</h1>"
             f'<p>A weekly, plain-language digest of the latest in AI. '
             f'<a href="archive.html">Browse the archive</a>.</p>'
-            f'<!-- BUTTONDOWN_SIGNUP_FORM -->'
             f'<p><a href="digests/{_esc(dated)}.html">Read this week\'s digest ({_esc(dated)})</a></p>')
 
 
