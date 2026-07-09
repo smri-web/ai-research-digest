@@ -111,6 +111,9 @@ def main(dry_run: bool = False, selftest: bool = False, to_stdout: bool = False)
 
     if dry_run:
         log.info("Dry run: skipping email send. Files written.")
+    elif not os.environ.get("BUTTONDOWN_API_KEY"):
+        # No Buttondown yet: publish the site and archive anyway, just skip the email.
+        log.warning("BUTTONDOWN_API_KEY not set; skipping email send. Site files still written.")
     else:
         ok = delivery.send(f"AI Research Digest: {dated}", email_html)
         if not ok:
