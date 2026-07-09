@@ -22,16 +22,29 @@ def _item():
                 track="models", content_type="paper")
 
 
-def test_parses_gemini_json(monkeypatch):
-    gemini_text = json.dumps({
-        "beats": {"What they studied": "a", "Key finding": "b", "Why it matters": "c"},
-        "breakdown": "d",
-    })
-    payload = {"candidates": [{"content": {"parts": [{"text": gemini_text}]}}]}
-    monkeypatch.setattr(summarize.requests, "post", lambda *a, **k: _Resp(payload))
+PAPER_REQUIRED = ["What they studied", "Why they studied it", "Method",
+                  "Findings and results", "Benefits and impact"]
+
+
+def _payload(beats):
+    text = json.dumps({"beats": beats, "breakdown": "d"})
+    return {"candidates": [{"content": {"parts": [{"text": text}]}}]}
+
+
+def test_parses_gemini_json_with_future_section(monkeypatch):
+    beats = {k: "x" for k in PAPER_REQUIRED}
+    beats["What it adds to the future"] = "points toward better agents"
+    monkeypatch.setattr(summarize.requests, "post", lambda *a, **k: _Resp(_payload(beats)))
     s = summarize.summarize(_item(), api_key="fake")
-    assert list(s.beats.keys()) == ["What they studied", "Key finding", "Why it matters"]
+    assert list(s.beats.keys()) == PAPER_REQUIRED + ["What it adds to the future"]
     assert s.breakdown == "d"
+
+
+def test_future_section_is_optional(monkeypatch):
+    beats = {k: "x" for k in PAPER_REQUIRED}   # model omitted the future key
+    monkeypatch.setattr(summarize.requests, "post", lambda *a, **k: _Resp(_payload(beats)))
+    s = summarize.summarize(_item(), api_key="fake")
+    assert list(s.beats.keys()) == PAPER_REQUIRED
 
 
 def test_returns_none_without_key(monkeypatch):
