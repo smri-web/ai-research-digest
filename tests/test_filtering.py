@@ -25,6 +25,14 @@ def test_articles_need_a_real_ai_signal():
     assert [i.id for i in out] == ["legit"]
 
 
+def test_backdated_window_excludes_newer_items():
+    # When generating a digest for a past week, items published after that week must not leak in.
+    in_window = _item(id="in", published=NOW - timedelta(days=2))
+    newer = _item(id="newer", published=NOW + timedelta(days=3))
+    out = filtering.filter_items([in_window, newer], NOW, set())
+    assert [i.id for i in out] == ["in"]
+
+
 def test_word_boundary_not_substring():
     # "storage pipeline for email" must NOT count as relevant via 'rag' inside 'storage' or
     # 'ai' inside 'email'. With no real AI term, this article is dropped.

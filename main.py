@@ -12,12 +12,14 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("digest")
 
 
-def collect():
+def collect(deep: bool = False):
+    # deep=True fetches further back per source, needed when generating a backdated digest:
+    # sources return newest-first, so reaching a past week means pulling more results.
     items, errors = [], []
     s2_total = 0
     for track_key in config.TRACKS:
-        a = arxiv.fetch(track_key)
-        s = semantic_scholar.fetch(track_key)
+        a = arxiv.fetch(track_key, max_results=150 if deep else 30)
+        s = semantic_scholar.fetch(track_key, limit=50 if deep else 20)
         s2_total += len(s)
         if not a:
             errors.append(f"arXiv ({config.TRACKS[track_key]['name']})")
@@ -25,7 +27,7 @@ def collect():
     if s2_total == 0:
         errors.append("Semantic Scholar")
     for feed in config.RSS_FEEDS:
-        got = rss.fetch(feed)
+        got = rss.fetch(feed, max_items=40 if deep else 15)
         if not got:
             errors.append(feed["source"])
         items += got
@@ -57,12 +59,17 @@ def overview_text(groups) -> str:
             f"Each entry links to its source and expands to a fuller breakdown on the site.")
 
 
-def main(to_stdout: bool = False):
+def main(to_stdout: bool = False, date: str | None = None):
     load_dotenv()
-    now = datetime.now(UTC)
+    if date:
+        # Backdated issue: treat the end of that day as "now" so the 7-day window covers the
+        # week leading up to it, and fetch deeper since sources return newest-first.
+        now = datetime.strptime(date, "%Y-%m-%d").replace(hour=23, minute=59, tzinfo=UTC)
+    else:
+        now = datetime.now(UTC)
     dated = now.strftime("%Y-%m-%d")
 
-    raw, source_errors = collect()
+    raw, source_errors = collect(deep=bool(date))
     # --print is a stateless, on-demand view: ignore the "already sent" set so it always shows a
     # full current digest, and it never saves state (see the early return below).
     seen = set() if to_stdout else state.load_seen(config.PROCESSED_IDS_PATH)
@@ -109,4 +116,5 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--print", dest="to_stdout", action="store_true",
                     help="generate a fresh digest and print it as markdown to stdout; no files or state changes")
+    ap.add_argument("--date", help="generate a backdated issue for this date (YYYY-MM-DD), covering the 7 days before it")
     main(**vars(ap.parse_args()))

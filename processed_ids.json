@@ -1,1 +1,11 @@
-[]
+[
+  "2607.01034v1",
+  "2607.02245v1",
+  "2607.02885v1",
+  "https://huggingface.co/blog/allenai/discoformer",
+  "https://huggingface.co/blog/ibm-research/scarfbench",
+  "https://magazine.sebastianraschka.com/p/using-local-coding-agents",
+  "https://simonwillison.net/2026/Jul/2/dspy-datasette-agent-prompts/#atom-everything",
+  "https://simonwillison.net/2026/Jul/2/llm-coding-agent/#atom-everything",
+  "https://simonwillison.net/2026/Jul/3/judgement/#atom-everything"
+]

@@ -52,6 +52,10 @@ def filter_items(items: list[Item], now: datetime, seen_ids: set[str]) -> list[I
             continue
         if it.published < cutoff:
             continue
+        # Newer than the reference date: only possible when generating a backdated digest,
+        # where items published after the target week must not leak in.
+        if it.published > now:
+            continue
         if not _is_relevant(it):
             continue
         if _is_skippable(it):
