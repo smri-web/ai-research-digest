@@ -5,7 +5,7 @@ Owner: Smuruthi Kesavan (product marketer, not an engineer — code changes are 
 
 ## Goal
 
-A hands-off weekly newsletter about the latest in AI/tech. Every Saturday morning (IST), a
+A hands-off weekly newsletter about the latest in AI/tech. Every Friday evening (18:00 IST; changed from Saturday morning on 2026-07-09), a
 GitHub Actions job fetches recent papers and articles, filters to what actually matters,
 summarizes each in plain language with the Claude API, publishes a web page + archive on
 GitHub Pages, and emails the summaries to subscribers via Buttondown. No laptop required.
@@ -21,7 +21,7 @@ The real editorial filter: **latest tech / AI, and nothing else.**
 - **Delivery (changed 2026-07-09): Obsidian, not email.** The weekly markdown digest (now with
   YAML frontmatter: date + `ai-digest` tag) is pulled from the repo into the owner's iCloud
   Obsidian vault ("AI Knowledge/AI Research Digest") by a launchd agent
-  (`com.smri.aidigest-obsidian`, Saturdays 10:00 IST + at login) running
+  (`com.smri.aidigest-obsidian`, Fridays 19:00 IST + at login) running
   `scripts/sync_to_obsidian.py` from `~/Library/Application Support/aidigest/` (background jobs
   cannot read `~/Documents` under macOS TCC). Email/Buttondown/Gmail code was removed entirely;
   the website + archive remain. (Buttondown had been chosen over Gmail SMTP earlier; both are
@@ -52,7 +52,7 @@ dropped rather than left fragile.
 arXiv queries and Semantic Scholar keywords per track are carried over from the original project
 instructions (see `config.py`).
 
-## Pipeline (runs every Saturday 09:00 IST)
+## Pipeline (runs every Friday 18:00 IST)
 
 1. **Fetch** — arXiv API, Semantic Scholar API, and the RSS feeds. Each item is normalized into a
    common shape: `id`, `title`, `authors`, `source`, `url`, `published`, `abstract/excerpt`,
@@ -92,7 +92,7 @@ instructions (see `config.py`).
 ## Automation
 
 `.github/workflows/weekly-digest.yml`:
-- `on.schedule.cron: '30 3 * * 6'` — 03:30 UTC Saturday = 09:00 IST Saturday. (GitHub may delay
+- `on.schedule.cron: '30 12 * * 5'` — 12:30 UTC Friday = 18:00 IST Friday. (GitHub may delay
   scheduled runs a few minutes under load; acceptable for weekly.) Also `workflow_dispatch` so the
   job can be run manually from the Actions tab for testing.
 - Steps: checkout, set up Python, `pip install -r requirements.txt`, run `python -m main`, commit

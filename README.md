@@ -1,6 +1,6 @@
 # AI Research Digest
 
-A weekly, plain-language digest of the latest in AI. Every Saturday morning (9:00 AM IST), a job
+A weekly, plain-language digest of the latest in AI. Every Friday evening (6:00 PM IST), a job
 running on GitHub's servers (no laptop needed) fetches recent papers and articles, keeps the 10
 most relevant, summarizes each with Google Gemini, and publishes a web page with a running archive.
 A small companion job on the owner's Mac then delivers each new digest into an Obsidian vault.
@@ -12,10 +12,10 @@ A small companion job on the owner's Mac then delivers each new digest into an O
 
 The site is hosted free on **GitHub Pages** (served from the `docs/` folder). The schedule and
 automation are handled by **GitHub Actions** (a free robot that runs the script on a timer:
-`30 3 * * 6`, which is 9:00 AM IST Saturday). Summaries are written by **Google Gemini's free
+`30 12 * * 5`, which is 6:00 PM IST Friday). Summaries are written by **Google Gemini's free
 tier** (`gemini-2.5-flash`, set in `config.py`); the `GEMINI_API_KEY` secret is stored encrypted
 in GitHub and never appears in code or logs. There is no email list: instead, a tiny **launchd**
-job on the Mac (`com.smri.aidigest-obsidian`) checks the repo every Saturday at 10:00 AM and at
+job on the Mac (`com.smri.aidigest-obsidian`) checks the repo every Friday at 7:00 PM and at
 login, and downloads any new digest notes into the Obsidian vault, where iCloud syncs them to
 other devices.
 
@@ -43,16 +43,18 @@ queries, and feeds all live in `config.py`.
   `~/Library/Application Support/aidigest/sync_to_obsidian.py` (background jobs cannot read
   `~/Documents` on macOS, so the copy lives in an unprotected location). If you edit the script in
   the repo, re-copy it there.
-- Schedule: `~/Library/LaunchAgents/com.smri.aidigest-obsidian.plist` — Saturdays 10:00 AM plus
+- Schedule: `~/Library/LaunchAgents/com.smri.aidigest-obsidian.plist` — Fridays 7:00 PM plus
   every login (so a Mac that was asleep catches up). Log: `~/Library/Logs/aidigest-obsidian.log`.
 - Destination: the "AI Research Digest" folder inside the "AI Knowledge" vault (iCloud).
 - It only ever downloads notes it does not have; it never edits or deletes anything in the vault,
   so your own notes and edits are safe.
 
-## Reading it on demand
+## Running it on demand
 
-- The personal Claude Code skill (`~/.claude/skills/ai-research-digest`) prints a fresh digest in
-  any Claude session: it runs `python -m main --print`, which writes no files and saves no state.
+- The personal Claude Code skill (`~/.claude/skills/ai-research-digest`) generates a fresh digest
+  in any Claude session and publishes it the same way the Friday run does: archive page, Obsidian
+  note, and the digest shown in chat.
+- For a preview that publishes nothing: `./.venv/bin/python -m main --print`.
 
 ## Running locally
 
@@ -74,7 +76,7 @@ Nothing. Gemini free tier + GitHub Actions/Pages on a public repo + iCloud you a
 - **Run is red at "Generate and send digest":** usually the `GEMINI_API_KEY` secret is missing or
   rotated. Repo → Settings → Secrets and variables → Actions.
 - **A note did not appear in Obsidian:** check `~/Library/Logs/aidigest-obsidian.log`. The job
-  also runs at every login, so a missed Saturday self-heals.
+  also runs at every login, so a missed Friday self-heals.
 - **"Nothing new to publish this week" in the Actions log:** everything found was already covered
   in a prior run. Normal in a quiet week.
 - **Sources listed as unavailable at the top of a digest:** that source was down or rate-limited

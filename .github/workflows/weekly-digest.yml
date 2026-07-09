@@ -1,7 +1,7 @@
 name: Weekly digest
 on:
   schedule:
-    - cron: "30 3 * * 6"      # 03:30 UTC Saturday = 09:00 IST Saturday
+    - cron: "30 12 * * 5"     # 12:30 UTC Friday = 6:00 PM IST Friday evening
   workflow_dispatch:           # lets you run it by hand from the Actions tab
 
 permissions:
