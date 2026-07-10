@@ -2,10 +2,19 @@
   "2607.01034v1",
   "2607.02245v1",
   "2607.02885v1",
+  "2607.08541v1",
+  "2607.08745v1",
+  "2607.08768v1",
   "https://huggingface.co/blog/allenai/discoformer",
   "https://huggingface.co/blog/ibm-research/scarfbench",
+  "https://huggingface.co/blog/native-speed-vllm-transformers-backend",
   "https://magazine.sebastianraschka.com/p/using-local-coding-agents",
   "https://simonwillison.net/2026/Jul/2/dspy-datasette-agent-prompts/#atom-everything",
   "https://simonwillison.net/2026/Jul/2/llm-coding-agent/#atom-everything",
-  "https://simonwillison.net/2026/Jul/3/judgement/#atom-everything"
+  "https://simonwillison.net/2026/Jul/3/judgement/#atom-everything",
+  "https://simonwillison.net/2026/Jul/9/gpt-5-6/#atom-everything",
+  "https://simonwillison.net/2026/Jul/9/llm-meta-ai/#atom-everything",
+  "https://simonwillison.net/2026/Jul/9/muse-spark-1-1/#atom-everything",
+  "https://www.technologyreview.com/?p=1140293",
+  "https://www.technologyreview.com/?p=1140316"
 ]
