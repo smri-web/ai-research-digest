@@ -43,8 +43,11 @@ queries, and feeds all live in `config.py`.
   `~/Library/Application Support/aidigest/sync_to_obsidian.py` (background jobs cannot read
   `~/Documents` on macOS, so the copy lives in an unprotected location). If you edit the script in
   the repo, re-copy it there.
-- Schedule: `~/Library/LaunchAgents/com.smri.aidigest-obsidian.plist` — Fridays 7:00 PM plus
-  every login (so a Mac that was asleep catches up). Log: `~/Library/Logs/aidigest-obsidian.log`.
+- Schedule: `~/Library/LaunchAgents/com.smri.aidigest-obsidian.plist` — checks Friday 7/9/11 PM,
+  Saturday 9:30 AM, Sunday 10 AM, and at every login. Multiple checks because GitHub's cron can
+  run hours late (it did on 2026-07-10, so the single 7 PM check missed the digest); the check is
+  one cheap request and only downloads notes it does not already have.
+  Log: `~/Library/Logs/aidigest-obsidian.log`.
 - Destination: the "AI Research Digest" folder inside the "AI Knowledge" vault (iCloud).
 - It only ever downloads notes it does not have; it never edits or deletes anything in the vault,
   so your own notes and edits are safe.

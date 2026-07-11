@@ -1,7 +1,7 @@
 name: Weekly digest
 on:
   schedule:
-    - cron: "30 12 * * 5"     # 12:30 UTC Friday = 6:00 PM IST Friday evening
+    - cron: "47 12 * * 5"     # 12:47 UTC Friday = 6:17 PM IST (odd minute: GitHub delays congested :00/:30 crons less)
   workflow_dispatch:           # lets you run it by hand from the Actions tab
 
 permissions:
