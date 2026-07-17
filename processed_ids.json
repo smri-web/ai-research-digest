@@ -5,10 +5,17 @@
   "2607.08541v1",
   "2607.08745v1",
   "2607.08768v1",
+  "2607.15143v1",
+  "2607.15202v1",
+  "2607.15216v1",
+  "https://arstechnica.com/ai/2026/07/linus-torvalds-to-critics-of-ai-coding-in-linux-fork-it-or-just-walk-away/",
   "https://huggingface.co/blog/allenai/discoformer",
   "https://huggingface.co/blog/ibm-research/scarfbench",
   "https://huggingface.co/blog/native-speed-vllm-transformers-backend",
   "https://magazine.sebastianraschka.com/p/using-local-coding-agents",
+  "https://simonwillison.net/2026/Jul/14/armin-ronacher/#atom-everything",
+  "https://simonwillison.net/2026/Jul/15/claude-web-fetch-exfiltration/#atom-everything",
+  "https://simonwillison.net/2026/Jul/16/grok-mermaid/#atom-everything",
   "https://simonwillison.net/2026/Jul/2/dspy-datasette-agent-prompts/#atom-everything",
   "https://simonwillison.net/2026/Jul/2/llm-coding-agent/#atom-everything",
   "https://simonwillison.net/2026/Jul/3/judgement/#atom-everything",
@@ -16,5 +23,7 @@
   "https://simonwillison.net/2026/Jul/9/llm-meta-ai/#atom-everything",
   "https://simonwillison.net/2026/Jul/9/muse-spark-1-1/#atom-everything",
   "https://www.technologyreview.com/?p=1140293",
-  "https://www.technologyreview.com/?p=1140316"
+  "https://www.technologyreview.com/?p=1140316",
+  "https://www.technologyreview.com/?p=1140514",
+  "https://www.technologyreview.com/?p=1140600"
 ]
