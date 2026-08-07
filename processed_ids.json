@@ -14,8 +14,13 @@
   "2607.28460v1",
   "2607.28608v1",
   "2607.28618v1",
+  "2608.06246v1",
+  "2608.06331v1",
+  "2608.06366v1",
   "https://arstechnica.com/ai/2026/07/ai-arms-race-in-line-for-a-reckoning-after-openai-hacking-incident/",
   "https://arstechnica.com/ai/2026/07/linus-torvalds-to-critics-of-ai-coding-in-linux-fork-it-or-just-walk-away/",
+  "https://arstechnica.com/ai/2026/08/bytedance-trains-massive-ai-model-in-bid-to-rival-anthropic/",
+  "https://arstechnica.com/ai/2026/08/cloudflare-open-sources-vibe-coding-platform-for-people-who-arent-coders/",
   "https://arstechnica.com/science/2026/07/if-a-quantum-computer-outperforms-normal-ones-can-you-tell-if-its-right/",
   "https://arstechnica.com/security/2026/07/ai-scammers-outperform-humans-when-it-comes-to-building-trust/",
   "https://arstechnica.com/tech-policy/2026/07/ai-kill-switch-act-would-let-trump-admin-order-shutdown-of-rogue-ai-systems/",
@@ -23,6 +28,9 @@
   "https://huggingface.co/blog/ibm-research/scarfbench",
   "https://huggingface.co/blog/native-speed-vllm-transformers-backend",
   "https://magazine.sebastianraschka.com/p/using-local-coding-agents",
+  "https://simonwillison.net/2026/Aug/3/david-crawshaw/#atom-everything",
+  "https://simonwillison.net/2026/Aug/5/incident-report/#atom-everything",
+  "https://simonwillison.net/2026/Aug/6/an-ai-model-from-meta/#atom-everything",
   "https://simonwillison.net/2026/Jul/14/armin-ronacher/#atom-everything",
   "https://simonwillison.net/2026/Jul/15/claude-web-fetch-exfiltration/#atom-everything",
   "https://simonwillison.net/2026/Jul/16/grok-mermaid/#atom-everything",
@@ -45,5 +53,6 @@
   "https://www.technologyreview.com/?p=1140600",
   "https://www.technologyreview.com/?p=1140675",
   "https://www.technologyreview.com/?p=1140685",
-  "https://www.technologyreview.com/?p=1140936"
+  "https://www.technologyreview.com/?p=1140936",
+  "https://www.technologyreview.com/?p=1141039"
 ]
