@@ -34,6 +34,8 @@
   "2609.30074v1",
   "2609.30205v1",
   "2609.30210v1",
+  "2610.02038v1",
+  "2610.02117v1",
   "https://arstechnica.com/ai/2026/07/ai-arms-race-in-line-for-a-reckoning-after-openai-hacking-incident/",
   "https://arstechnica.com/ai/2026/07/linus-torvalds-to-critics-of-ai-coding-in-linux-fork-it-or-just-walk-away/",
   "https://arstechnica.com/ai/2026/08/anthropics-new-hardware-standard-lets-ai-agents-control-the-physical-world/",
@@ -57,6 +59,7 @@
   "https://huggingface.co/blog/muse-glimmer",
   "https://huggingface.co/blog/native-speed-vllm-transformers-backend",
   "https://huggingface.co/blog/train-multi-vector-encoder",
+  "https://magazine.sebastianraschka.com/p/classifier-history-and-jev",
   "https://magazine.sebastianraschka.com/p/using-local-coding-agents",
   "https://simonwillison.net/2026/Aug/10/introducing-muse-glimmer/",
   "https://simonwillison.net/2026/Aug/12/alchemy-utils/",
@@ -85,6 +88,7 @@
   "https://simonwillison.net/2026/Jul/9/gpt-5-6/#atom-everything",
   "https://simonwillison.net/2026/Jul/9/llm-meta-ai/#atom-everything",
   "https://simonwillison.net/2026/Jul/9/muse-spark-1-1/#atom-everything",
+  "https://simonwillison.net/2026/Oct/1/matthew-green/",
   "https://simonwillison.net/2026/Sep/1/claude-fable-5-1/",
   "https://simonwillison.net/2026/Sep/16/one-claude/",
   "https://simonwillison.net/2026/Sep/17/compaction-summaries/",
@@ -94,6 +98,8 @@
   "https://simonwillison.net/2026/Sep/23/bof-agentic-engineering/",
   "https://simonwillison.net/2026/Sep/24/harder/",
   "https://simonwillison.net/2026/Sep/25/john-gruber/",
+  "https://simonwillison.net/2026/Sep/29/anthropic-frontier-red-team/",
+  "https://simonwillison.net/2026/Sep/29/openai-devday-2026-live-blog/",
   "https://simonwillison.net/2026/Sep/9/blender-viewer/",
   "https://www.quantamagazine.org/?p=165277",
   "https://www.quantamagazine.org/?p=165961",
@@ -111,5 +117,6 @@
   "https://www.technologyreview.com/?p=1142571",
   "https://www.technologyreview.com/?p=1142627",
   "https://www.technologyreview.com/?p=1145048",
-  "https://www.technologyreview.com/?p=1145144"
+  "https://www.technologyreview.com/?p=1145144",
+  "https://www.technologyreview.com/?p=1145592"
 ]
